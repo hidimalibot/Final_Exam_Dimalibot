@@ -1,0 +1,34 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+
+  - name: Update repository index (Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "Ubuntu"
+
+  - name: Update repository index (CentOS)
+    tags: always
+    dnf:
+      update_cache: yes
+    changed_when: false
+    when: ansible_distribution == "CentOS"
+
+
+
+  - name: Enabling/Starting Prometheus on CentOS
+    tags: centos, apache, httpd, Prometheus
+    service:
+        name: httpd
+        state: started
+    when: ansible_distribution == "CentOS"
+
+- hosts: all
+  become: true
+  roles:
+    - monitor
+
